@@ -60,10 +60,10 @@ for item in items[:max_n]:
         desc_text = re.sub(r'<[^>]+>', '', desc_text)
         desc_text = re.sub(r'arXiv:[\w\./\-]+\s*\w*\s*Announce Type:\s*\w+\s*Abstract:\s*', '', desc_text)
         desc_text = re.sub(r'\s+', ' ', desc_text).strip()
-        abstract = desc_text[:180]
+        abstract = desc_text[:120]
     print(f'• **{title}**')
     if arxiv_id: print(f'  arXiv:{arxiv_id}')
-    if abstract: print(f'  _{abstract}..._')
+    if abstract: print(f'  _{abstract[:120]}..._')
     count += 1
     print('')
 if count == 0:
