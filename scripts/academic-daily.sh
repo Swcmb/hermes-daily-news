@@ -86,7 +86,7 @@ echo ""
 ARXIV_AI=$(fetch "https://rss.arxiv.org/rss/cs.AI")
 if [ -n "$ARXIV_AI" ] && [ "${#ARXIV_AI}" -gt 5000 ]; then
     echo "$ARXIV_AI" > "$CACHE_DIR/ai.xml"
-    parse_arxiv "$CACHE_DIR/ai.xml" 4
+    parse_arxiv "$CACHE_DIR/ai.xml" 3
 else
     echo "（arXiv cs.AI 暂不可用）"
 fi
@@ -97,7 +97,7 @@ echo ""
 ARXIV_ML=$(fetch "https://rss.arxiv.org/rss/stat.ML")
 if [ -n "$ARXIV_ML" ] && [ "${#ARXIV_ML}" -gt 5000 ]; then
     echo "$ARXIV_ML" > "$CACHE_DIR/ml.xml"
-    parse_arxiv "$CACHE_DIR/ml.xml" 4
+    parse_arxiv "$CACHE_DIR/ml.xml" 3
 else
     echo "（arXiv stat.ML 暂不可用）"
 fi
@@ -108,7 +108,7 @@ echo ""
 ARXIV_GN=$(fetch "https://rss.arxiv.org/rss/q-bio.GN")
 if [ -n "$ARXIV_GN" ] && [ "${#ARXIV_GN}" -gt 1000 ]; then
     echo "$ARXIV_GN" > "$CACHE_DIR/gn.xml"
-    parse_arxiv "$CACHE_DIR/gn.xml" 5
+    parse_arxiv "$CACHE_DIR/gn.xml" 3
 else
     echo "（arXiv q-bio.GN 暂不可用）"
 fi
@@ -119,7 +119,7 @@ echo ""
 ARXIV_QM=$(fetch "https://rss.arxiv.org/rss/q-bio.QM")
 if [ -n "$ARXIV_QM" ] && [ "${#ARXIV_QM}" -gt 1000 ]; then
     echo "$ARXIV_QM" > "$CACHE_DIR/qm.xml"
-    parse_arxiv "$CACHE_DIR/qm.xml" 5
+    parse_arxiv "$CACHE_DIR/qm.xml" 3
 else
     echo "（arXiv q-bio.QM 暂不可用）"
 fi
@@ -131,7 +131,7 @@ ARXIV_LG=$(fetch "https://rss.arxiv.org/rss/cs.LG")
 if [ -n "$ARXIV_LG" ] && [ "${#ARXIV_LG}" -gt 5000 ]; then
     echo "$ARXIV_LG" > "$CACHE_DIR/lg.xml"
     # 关键词：protein, drug, gene, molecular, GNN, graph neural, AlphaFold
-    parse_arxiv "$CACHE_DIR/lg.xml" 6 "protein|drug|gene|molecular|graph|neural|alphafold|peptide|chem"
+    parse_arxiv "$CACHE_DIR/lg.xml" 3 "protein|drug|gene|molecular|graph|neural|alphafold|peptide|chem"
 else
     echo "（arXiv cs.LG 暂不可用）"
 fi
