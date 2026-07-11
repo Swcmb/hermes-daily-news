@@ -82,7 +82,7 @@ echo ""
 ARXIV_AI=$(fetch "https://rss.arxiv.org/rss/cs.AI")
 if [ -n "$ARXIV_AI" ] && [ "${#ARXIV_AI}" -gt 5000 ]; then
     echo "$ARXIV_AI" > "$CACHE_DIR/arxiv_ai.xml"
-    parse_arxiv "$CACHE_DIR/arxiv_ai.xml" 6
+    parse_arxiv "$CACHE_DIR/arxiv_ai.xml" 4
 else
     echo "（arXiv cs.AI 暂不可用，${TIMEOUT_HTTP}s 超时）"
 fi
@@ -93,7 +93,7 @@ echo ""
 ARXIV_LG=$(fetch "https://rss.arxiv.org/rss/cs.LG")
 if [ -n "$ARXIV_LG" ] && [ "${#ARXIV_LG}" -gt 5000 ]; then
     echo "$ARXIV_LG" > "$CACHE_DIR/arxiv_lg.xml"
-    parse_arxiv "$CACHE_DIR/arxiv_lg.xml" 5
+    parse_arxiv "$CACHE_DIR/arxiv_lg.xml" 3
 else
     echo "（arXiv cs.LG 暂不可用，${TIMEOUT_HTTP}s 超时）"
 fi
@@ -101,7 +101,7 @@ echo ""
 
 echo "## ⭐ GitHub Trending（近 7 天热门 AI 仓库）"
 echo ""
-GH=$(fetch "https://api.github.com/search/repositories?q=created:>$(date -d '7 days ago' '+%Y-%m-%d')+topic:llm+OR+topic:agent&sort=stars&order=desc&per_page=8")
+GH=$(fetch "https://api.github.com/search/repositories?q=created:>$(date -d '7 days ago' '+%Y-%m-%d')+topic:llm+OR+topic:agent&sort=stars&order=desc&per_page=5")
 if [ -n "$GH" ] && echo "$GH" | grep -q '"items"'; then
     echo "$GH" | python3 -c "
 import json, sys
@@ -110,9 +110,9 @@ try:
     items = data.get('items', [])
     if not items:
         print('（今日暂无新增热门 AI 仓库）')
-    for i, item in enumerate(items[:8], 1):
+    for i, item in enumerate(items[:5], 1):
         name = item.get('full_name', '')
-        desc = (item.get('description', '') or '').replace(chr(10), ' ')[:65]
+        desc = (item.get('description', '') or '').replace(chr(10), ' ')[:40]
         stars = item.get('stargazers_count', 0)
         lang = item.get('language', '') or ''
         print(f'{i}. **{name}** ⭐{stars} ({lang})')
@@ -125,7 +125,7 @@ else
 fi
 echo ""
 
-echo "## 💼 产业动态（36氪 AI 相关快讯 Top 8）"
+echo "## 💼 产业动态（36氪 AI 相关快讯 Top 5）"
 echo ""
 KR=$(fetch "https://rsshub.rssforever.com/36kr/newsflashes")
 if [ -n "$KR" ]; then
@@ -133,7 +133,7 @@ if [ -n "$KR" ]; then
     AI_ITEMS=$(grep -oP '(?<=<title>)[^<]+' "$CACHE_DIR/kr.xml" 2>/dev/null \
         | sed 's/&#34;/"/g; s/&quot;/"/g; s/&amp;/\&/g' \
         | grep -iE 'AI|大模型|GPT|算力|芯片|机器人|智能|模型|开源|Agent' \
-        | head -n 8)
+        | head -n 5)
     if [ -n "$AI_ITEMS" ]; then
         echo "$AI_ITEMS" | nl -n rz -w 2 -s '. '
     else
