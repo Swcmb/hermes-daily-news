@@ -62,8 +62,8 @@ for item in items:
     m_id = re.search(r'arxiv\.org/abs/([\w\./\-]+)', link)
     if m_id: arxiv_id = m_id.group(1)
     print(f'#### 〔{title}〕')
-    if arxiv_id: print(f'- **arXiv**: {arxiv_id} | **链接**: {link}')
-    if abstract: print(f'- **摘要**: _{abstract[:280]}..._')
+    if arxiv_id: print(f'- **arXiv**: {arxiv_id}')
+    if abstract: print(f'- **摘要**: _{abstract[:150]}..._')
     print('')
     shown += 1
 if shown == 0:
