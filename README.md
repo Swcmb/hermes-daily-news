@@ -1,61 +1,56 @@
-# 智讯日报 — Hermes Daily News System
+# hermes-daily-news
 
-每日自动采集并推送三大日报的完整系统，运行在 Hermes Agent 的 cron 调度之上。
+智讯日报——每日自动推送综合新闻、AI 科技、学术前沿三大日报到 QQ。
 
-## 日报一览
+v2.1 架构：Shell + Python 混合，18 数据源，132 测试全绿。
 
-| 类型 | 时间 | 模式 | 数据源 |
-|------|------|------|--------|
-| 📰 综合新闻 | 08:00 | 纯 Shell 脚本 | 知乎热榜、36氪、牛客、GitHub Trending |
-| 📡 AI科技 | 12:00 | Agent 模式（LLM 翻译） | arXiv cs.AI/cs.LG、GitHub、36氪 |
-| 🧬 学术前沿 | 18:00 | Agent 模式（LLM 翻译） | arXiv cs.AI/stat.ML/q-bio.GN/q-bio.QM |
-
-## 文件结构
+## 项目结构
 
 ```
 hermes-daily-news/
-├── scripts/
-│   ├── comprehensive-news-daily.sh   # 综合新闻（纯 Shell）
-│   ├── tech-ai-daily.sh              # AI科技（Shell + Python 解析）
-│   └── academic-daily.sh             # 学术前沿（Shell + Python 解析）
-├── skill/
-│   └── SKILL.md                      # Hermes skill 定义
-└── README.md
+├── config/config.sh       # 配置（数据源 URL/缓存 TTL/QQ_TARGET）
+├── lib/                   # 核心库
+│   ├── fetch_worker.py    # 并行抓取入口
+│   ├── format_markdown.py # JSON → Markdown
+│   ├── cache.py           # 文件缓存
+│   ├── dedup.py           # 去重
+│   ├── common.sh          # Shell 公共库
+│   └── parsers/           # 8 个数据源解析器
+├── scripts/               # Shell 脚本（cron 入口）
+├── tests/                 # 单元测试（132 个）
+├── skill/SKILL.md         # 技能定义
+└── deploy.sh              # 部署脚本
 ```
 
-## 设计原则
+## 快速开始
 
-- **中文优先**：所有日报内容为简体中文，英文源（arXiv、GitHub）标题/摘要经翻译后呈现
-- **防卡死**：每源 8-30s 超时，整脚本 50-150s 超时保护
-- **失败兜底**：单源失败不影响其他源，友好降级显示"暂不可用"
-- **多源并行**：独立 fetch，互不阻塞
+1. 部署后需手动修改 `config/config.sh` 填入真实 `QQ_TARGET`
+2. 运行 `bash deploy.sh` 部署
+3. 手动测试：`bash scripts/comprehensive.sh`
 
 ## 数据源
 
-| 源 | 用途 |
-|----|------|
-| rss.arxiv.org/rss/cs.AI | AI 论文 |
-| rss.arxiv.org/rss/cs.LG | 机器学习论文 |
-| rss.arxiv.org/rss/stat.ML | 统计学习 |
-| rss.arxiv.org/rss/q-bio.GN | 基因组学 |
-| rss.arxiv.org/rss/q-bio.QM | 定量生物学 |
-| rsshub.rssforever.com/36kr/newsflashes | 36氪快讯 |
-| rsshub.rssforever.com/nowcoder/recommend | 牛客热议 |
-| api.github.com/search/repositories | GitHub 仓库搜索 |
-| www.zhihu.com/rss | 知乎热榜 |
+| 日报 | 源数 | 模式 | 数据源 |
+|------|------|------|--------|
+| 综合新闻 | 5 | no-agent | 知乎/36氪/牛客/微博/百度 |
+| AI 科技 | 8 | agent | arXiv/GitHub/HN/PH/Reddit/36kr AI/TechCrunch AI |
+| 学术前沿 | 7 | agent | arXiv/PubMed/bioRxiv |
 
-## 部署
+## 配置
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `QQ_TARGET` | qqbot:YOUR_BOT_TOKEN_HERE | QQ Bot 推送目标 |
+| `GITHUB_TOKEN` | （空） | 可选，填入提升 API 限流至 5000 次/小时 |
+
+修改配置后无需改代码，下次 cron 执行自动生效。
+
+## 测试
 
 ```bash
-# 1. 放置脚本
-cp scripts/*.sh ~/.hermes/scripts/daily-news/
-
-# 2. 注册 cron 任务（Hermes Agent）
-hermes cron create --name "daily-comprehensive-news" --schedule "0 8 * * *" --script "daily-news/comprehensive-news-daily.sh" --no-agent
-hermes cron create --name "daily-tech-ai" --schedule "0 12 * * *" --prompt "..." --skill daily-news-editor
-hermes cron create --name "daily-academic" --schedule "0 18 * * *" --prompt "..." --skill daily-news-editor
+python -m pytest
 ```
 
-## 许可
+## License
 
-CC BY-NC 4.0 — 署名-非商业使用
+MIT
