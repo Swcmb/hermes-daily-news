@@ -55,23 +55,23 @@ else
 fi
 echo ""
 
-echo "## 💹 财经科技快讯（36氪 Top 10）"
+echo "## 💹 财经科技快讯（36氪 Top 5）"
 echo ""
 KR=$(fetch "https://rsshub.rssforever.com/36kr/newsflashes")
 if [ -n "$KR" ]; then
     echo "$KR" > "$CACHE_DIR/kr.xml"
-    extract_titles "$CACHE_DIR/kr.xml" 10 | nl -n rz -w 2 -s '. '
+    extract_titles "$CACHE_DIR/kr.xml" 5 | nl -n rz -w 2 -s '. '
 else
     echo "（36氪暂不可用）"
 fi
 echo ""
 
-echo "## 💻 行业热议（牛客 Top 8）"
+echo "## 💻 行业热议（牛客 Top 4）"
 echo ""
 NC=$(fetch "https://rsshub.rssforever.com/nowcoder/recommend")
 if [ -n "$NC" ]; then
     echo "$NC" > "$CACHE_DIR/nc.xml"
-    extract_titles "$CACHE_DIR/nc.xml" 8 | nl -n rz -w 2 -s '. '
+    extract_titles "$CACHE_DIR/nc.xml" 4 | nl -n rz -w 2 -s '. '
 else
     echo "（牛客暂不可用）"
 fi
@@ -79,15 +79,15 @@ echo ""
 
 echo "## ⭐ GitHub Trending（近 7 天新增热门仓库）"
 echo ""
-GH=$(fetch "https://api.github.com/search/repositories?q=created:>$(date -d '7 days ago' '+%Y-%m-%d')+language:python&sort=stars&order=desc&per_page=8")
+GH=$(fetch "https://api.github.com/search/repositories?q=created:>$(date -d '7 days ago' '+%Y-%m-%d')+language:python&sort=stars&order=desc&per_page=5")
 if [ -n "$GH" ]; then
     echo "$GH" | python3 -c "
 import json, sys
 try:
     data = json.load(sys.stdin)
-    for i, item in enumerate(data.get('items', [])[:8], 1):
+    for i, item in enumerate(data.get('items', [])[:5], 1):
         name = item.get('full_name', '')
-        desc = (item.get('description', '') or '').replace(chr(10), ' ')[:60]
+        desc = (item.get('description', '') or '').replace(chr(10), ' ')[:40]
         stars = item.get('stargazers_count', 0)
         lang = item.get('language', '') or ''
         print(f'{i}. **{name}** ⭐{stars} ({lang}) — {desc}')
